@@ -35,7 +35,7 @@ Existing Systems and Limitations:
 
 | System Name | Description | Limitations |
 | ----------- | ----------- | ----------- |
-| GU-UMS for Visually Impaired Students | A university management system designed for visually impaired users, focusing on voice commands. | Limited support for mobile devices |
+| UMS for Visually Impaired Students | A university management system designed for visually impaired users, focusing on voice commands. | Limited support for mobile devices |
 | AccessUni | General university management platform with accessibility features such as high contrast and screen reader compatibility. | Does not include voice commands; primarily designed for low vision users, not fully blind. |
 | EduAdapt | An educational portal with adaptive technologies including Braille support and audiobooks. | No integration of real-time communication or course management specific to university needs. |
 
