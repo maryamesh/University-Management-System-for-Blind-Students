@@ -1,0 +1,40 @@
+import os
+from PyPDF2 import PdfReader
+from transformers import pipeline
+
+def extract_text_from_pdf(file_path):
+    text = []
+    reader = PdfReader(file_path)
+    for page in reader.pages:
+        text.append(page.extract_text())
+    return "\n".join(text)
+
+def summarize_text(text, model_name="facebook/bart-large-cnn", max_words_per_summary=300):
+    summarizer = pipeline("summarization", model=model_name)
+    max_chunk_size = 1024  # max tokens for BART
+    
+    # Helper function to split text into chunks of a specified size
+    def split_text_into_chunks(text, chunk_size):
+        words = text.split()
+        for i in range(0, len(words), chunk_size):
+            yield ' '.join(words[i:i + chunk_size])
+    
+    # Split text into chunks
+    text_chunks = list(split_text_into_chunks(text, max_words_per_summary))
+    
+    # Summarize each chunk
+    summaries = []
+    for chunk in text_chunks:
+        summary = summarizer(chunk, max_length=max_words_per_summary, min_length=max_words_per_summary // 2, do_sample=False)
+        summaries.append(summary[0]['summary_text'])
+    
+    # Combine all summaries into a final summary
+    final_summary = ' '.join(summaries)
+    return final_summary
+
+if __name__ == "__main__":
+    pdf_path = "/content/Fine-Tuning_a_Transformer-Based_Language_Model_to_.pdf"
+    text = extract_text_from_pdf(pdf_path)
+    summary = summarize_text(text)
+    print("Summary:")
+    print(summary)
