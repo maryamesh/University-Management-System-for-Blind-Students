@@ -57,9 +57,35 @@ Existing Systems and Limitations:
 
 Supabase serves as the core database platform, enabling scalability, real-time data updates, and robust user authentication.
 
-### Python Integration
+# Python Integration
 
-Python scripts are used for PDF summarization, enhancing accessibility for blind students by providing concise document summaries.
+The system integrates Python scripts to improve accessibility for visually impaired students by:
+
+- Automating lecture content summarization  
+- Converting complex mathematical equations into spoken sentences  
+
+# PDF Summarization
+
+- Uses BART transformer model (`facebook/bart-large-cnn`) for abstractive summarization  
+- Extracts raw text from lecture PDFs using PyPDF2  
+- Cleans extracted text by removing excess whitespace  
+- Generates concise summaries with length controlled between 20% and 30% of original word count  
+- Uses GPU acceleration if available for faster processing  
+- Produces clear summaries for blind students to listen to, reducing cognitive load  
+
+# Mathematical OCR and Speech Conversion
+
+- Extracts images with mathematical content from lecture PDFs using PyMuPDF  
+- Uses a LaTeX OCR model (loaded with `texify`) to convert equation images to LaTeX code  
+- Cleans LaTeX output by replacing invalid KaTeX elements  
+- Parses LaTeX into symbolic expressions using SymPy  
+- Converts symbolic math expressions into human-readable spoken sentences  
+- Handles functions such as logarithms, trigonometric functions, powers, fractions, and sums  
+- Transforms equations into natural language, e.g.  
+  - "the natural logarithm of x"  
+  - "x raised to the power of y"  
+
+This pipeline allows blind students to hear complex math content clearly without visual interaction.
 
 ## System Design
 
@@ -67,17 +93,6 @@ Python scripts are used for PDF summarization, enhancing accessibility for blind
 
 - **Courses, Enrollments, Instructors, Lecture Summaries, Students, and more** ensure comprehensive data management and relationships.
 
-## Implementation
-
-- **Requirements Gathering:** Focused on the needs of blind students.
-- **System Design:** Ensured accessibility, security, and scalability.
-- **Environment Setup:** Tools and environments like Supabase and TypeScript.
-- **Backend and Frontend Development:** Developed RESTful APIs and accessible interfaces.
-- **Challenges and Solutions:** Addressed accessibility and real-time data synchronization.
-
-## Results and Discussion
-
-- The system successfully meets its objectives by providing an inclusive educational environment and enhancing accessibility for blind students.
 
 ## Future Work
 
@@ -85,49 +100,3 @@ Python scripts are used for PDF summarization, enhancing accessibility for blind
 - Implement a user feedback system.
 - Integrate adaptive learning tools.
 - Provide multimodal content delivery.
-
----
-
-## Python Code for PDF Summarization
-
-```python
-import os
-from PyPDF2 import PdfReader
-from transformers import pipeline
-
-def extract_text_from_pdf(file_path):
-    text = []
-    reader = PdfReader(file_path)
-    for page in reader.pages:
-        text.append(page.extract_text())
-    return "\n".join(text)
-
-def summarize_text(text, model_name="facebook/bart-large-cnn", max_words_per_summary=300):
-    summarizer = pipeline("summarization", model=model_name)
-    max_chunk_size = 1024  # max tokens for BART
-    
-    # Helper function to split text into chunks of a specified size
-    def split_text_into_chunks(text, chunk_size):
-        words = text.split()
-        for i in range(0, len(words), chunk_size):
-            yield ' '.join(words[i:i + chunk_size])
-    
-    # Split text into chunks
-    text_chunks = list(split_text_into_chunks(text, max_words_per_summary))
-    
-    # Summarize each chunk
-    summaries = []
-    for chunk in text_chunks:
-        summary = summarizer(chunk, max_length=max_words_per_summary, min_length=max_words_per_summary // 2, do_sample=False)
-        summaries.append(summary[0]['summary_text'])
-    
-    # Combine all summaries into a final summary
-    final_summary = ' '.join(summaries)
-    return final_summary
-
-if __name__ == "__main__":
-    pdf_path = "/content/Fine-Tuning_a_Transformer-Based_Language_Model_to_.pdf"
-    text = extract_text_from_pdf(pdf_path)
-    summary = summarize_text(text)
-    print("Summary:")
-    print(summary)
