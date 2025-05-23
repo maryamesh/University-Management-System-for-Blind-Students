@@ -12,7 +12,7 @@ The University Management System for Blind Students is a specialized web-based p
 
 In the evolving landscape of educational technology, inclusivity and accessibility are paramount, particularly for students with visual impairments. This University Management System leverages cutting-edge technology to create an accessible, voice-activated platform that fosters an inclusive educational environment.
 
-The system integrates Python scripts for PDF summarization and utilizes a BERT transformer architecture to summarize textual content, such as lecture notes and readings, providing concise, manageable information tailored to the needs of blind students.
+The system integrates Python scripts for PDF summarization and utilizes a BART transformer architecture to summarize textual content, such as lecture notes and readings, providing concise, manageable information tailored to the needs of blind students.
 
 ## System Overview
 
